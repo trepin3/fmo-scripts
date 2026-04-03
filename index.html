@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>FMO Scripts — Mortgage Protection Live Transfer</title>
+<style>
+:root {
+  --bg: #f5f5f7; --card: #ffffff; --text: #1d1d1f; --text-secondary: #6e6e73;
+  --primary: #0071e3; --primary-dark: #0059b3; --success: #30d158; --warning: #ff9f0a;
+  --danger: #ff453a; --border: #d2d2d7; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12); --radius: 14px; --radius-sm: 10px;
+  --input-bg: #f0f0f5; --objection-bg: #fff3e0; --objection-border: #ff9f0a;
+  --coaching-bg: #e8f5e9; --coaching-border: #30d158;
+}
+[data-theme="dark"] {
+  --bg: #000000; --card: #1c1c1e; --text: #f5f5f7; --text-secondary: #98989d;
+  --primary: #0a84ff; --primary-dark: #409cff; --border: #38383a;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3); --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+  --input-bg: #2c2c2e; --objection-bg: #2c2000; --coaching-bg: #002a00;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--text); min-height:100vh; min-height:100dvh;
+  padding-bottom:100px; transition: background 0.3s, color 0.3s;
+}
+
+/* TOP BAR */
+.top-bar {
+  position:sticky; top:0; z-index:100; background:var(--card); border-bottom:1px solid var(--border);
+  padding:12px 16px 8px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+}
+.top-bar-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.top-bar h1 { font-size:18px; font-weight:700; letter-spacing:-0.3px; }
+.top-bar-actions { display:flex; gap:8px; align-items:center; }
+.icon-btn {
+  width:36px; height:36px; border-radius:50%; border:none; background:var(--input-bg);
+  color:var(--text); font-size:18px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.script-type-badge {
+  font-size:10px; color:var(--text-secondary); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;
+}
+body.on-welcome .top-bar { display:none; }
+body.on-welcome .bottom-nav { display:none; }
+
+/* TIPS TOGGLE */
+.tips-toggle {
+  display:none; padding:4px 12px; border-radius:14px; border:1.5px solid var(--border);
+  background:var(--card); color:var(--text-secondary); font-size:12px; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+}
+.tips-toggle.active { display:inline-flex; }
+.tips-toggle.tips-on { border-color:var(--success); color:var(--success); background:rgba(48,209,88,0.08); }
+body.tips-hidden .coaching-tip { display:none !important; }
+
+/* MAIN */
+.main-content { max-width:600px; margin:0 auto; padding:16px; }
+
+/* WELCOME */
+.welcome-screen {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:90vh; text-align:center; padding:20px;
+}
+.welcome-logo {
+  width:80px; height:80px; background:linear-gradient(135deg, var(--primary), #00d4ff);
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  font-size:38px; margin-bottom:16px; color:white; box-shadow:var(--shadow-lg);
+}
+.welcome-screen h1 { font-size:32px; font-weight:800; letter-spacing:-1px; margin-bottom:6px; }
+.welcome-screen p { font-size:16px; color:var(--text-secondary); max-width:340px; line-height:1.5; margin-bottom:24px; }
+.prospect-input {
+  width:100%; max-width:300px; padding:14px 18px; border:2px solid var(--border); border-radius:var(--radius);
+  font-size:17px; text-align:center; background:var(--card); color:var(--text); outline:none; margin-bottom:16px;
+}
+.prospect-input:focus { border-color:var(--primary); }
+.start-btn {
+  width:100%; max-width:300px; padding:16px; border-radius:var(--radius); background:var(--primary);
+  color:white; font-size:16px; font-weight:700; border:none; cursor:pointer; transition:all 0.2s;
+}
+.start-btn:active { transform:scale(0.97); }
+
+/* SECTIONS */
+.script-section { display:none; animation:fadeIn 0.35s ease; }
+.script-section.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+
+.stage-badge {
+  display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;
+  color:var(--primary); background:rgba(0,113,227,0.08); padding:5px 12px; border-radius:20px; margin-bottom:8px;
+}
+.section-title { font-size:28px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px; }
+.section-subtitle { font-size:14px; color:var(--text-secondary); margin-bottom:16px; }
+
+/* CARDS */
+.card {
+  background:var(--card); border-radius:var(--radius); padding:20px; margin-bottom:14px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.card-header {
+  font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;
+  color:var(--primary); margin-bottom:10px;
+}
+.script-text { font-size:17px; line-height:1.6; }
+.direction { font-style:italic; color:var(--text-secondary); font-size:14px; margin:8px 0; }
+.mt-8 { margin-top:8px; }
+
+/* INOCULATION CARD */
+.inoculation-card {
+  background:linear-gradient(135deg, rgba(0,113,227,0.06), rgba(48,209,88,0.06));
+  border:1.5px solid var(--primary); border-radius:var(--radius); padding:20px; margin-bottom:14px;
+}
+.inoculation-card .card-header { color:var(--success); }
+
+/* COACHING TIP */
+.coaching-tip {
+  background:var(--coaching-bg); border-left:4px solid var(--coaching-border); border-radius:var(--radius-sm);
+  padding:12px 14px; margin-bottom:14px; font-size:14px; line-height:1.5;
+}
+
+/* OBJECTION ACCORDION */
+.objection-accordion {
+  background:var(--objection-bg); border:1.5px solid var(--objection-border);
+  border-radius:var(--radius); margin-bottom:14px; overflow:hidden;
+}
+.objection-accordion-trigger {
+  display:flex; justify-content:space-between; align-items:center; width:100%; padding:16px;
+  background:none; border:none; color:var(--text); font-size:15px; font-weight:700;
+  cursor:pointer; text-align:left;
+}
+.obj-arrow { font-size:12px; transition:transform 0.3s; color:var(--warning); }
+.objection-accordion.expanded .obj-arrow { transform:rotate(90deg); }
+.objection-accordion-body {
+  max-height:0; overflow:hidden; transition:max-height 0.35s ease; padding:0 16px;
+}
+.objection-accordion.expanded .objection-accordion-body { max-height:800px; padding:0 16px 16px; }
+.rebuttal { font-size:15px; line-height:1.6; margin-bottom:10px; }
+
+/* FILL FIELDS */
+.fill-field {
+  display:inline-block; min-width:80px; padding:2px 8px; border:2px dashed var(--primary);
+  border-radius:6px; color:var(--primary); font-weight:600; font-size:16px; cursor:pointer;
+  transition:all 0.2s; vertical-align:baseline;
+}
+.fill-field:active { transform:scale(0.97); }
+.fill-field.filled { background:rgba(0,113,227,0.1); border-style:solid; color:var(--primary-dark); }
+
+/* TOGGLE GROUP */
+.coverage-toggle-group { display:flex; gap:10px; margin-bottom:14px; }
+.coverage-toggle {
+  flex:1; padding:14px 12px; border-radius:var(--radius); border:2px solid var(--border);
+  background:var(--card); color:var(--text); font-size:15px; font-weight:700;
+  cursor:pointer; text-align:center; transition:all 0.2s;
+}
+.coverage-toggle:active { transform:scale(0.97); }
+.coverage-toggle.active { border-color:var(--primary); background:rgba(0,113,227,0.08); color:var(--primary); }
+
+/* CHECKLIST */
+.checklist { list-style:none; }
+.checklist-item {
+  display:flex; align-items:flex-start; gap:12px; padding:14px 0;
+  border-bottom:1px solid var(--border); cursor:pointer;
+}
+.checklist-item:last-child { border-bottom:none; }
+.check-circle {
+  width:26px; height:26px; min-width:26px; border-radius:50%; border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.2s; margin-top:2px;
+}
+.checklist-item.checked .check-circle { background:var(--success); border-color:var(--success); color:white; }
+.checklist-text { font-size:16px; line-height:1.45; flex:1; }
+.checklist-item.checked .checklist-text { opacity:0.5; text-decoration:line-through; }
+.checklist-sub { font-size:13px; color:var(--text-secondary); margin-top:3px; font-style:italic; }
+
+/* INPUT MODAL */
+.input-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; padding:20px; }
+.input-modal.active { display:flex; }
+.input-card { background:var(--card); border-radius:var(--radius); padding:24px; max-width:380px; width:100%; box-shadow:var(--shadow-lg); }
+.input-card label { display:block; font-size:14px; font-weight:600; color:var(--text-secondary); margin-bottom:10px; }
+.input-card input { width:100%; padding:14px; border:2px solid var(--border); border-radius:var(--radius-sm); font-size:17px; background:var(--input-bg); color:var(--text); outline:none; }
+.input-card input:focus { border-color:var(--primary); }
+.input-actions { display:flex; gap:10px; margin-top:14px; }
+.input-actions button { flex:1; padding:12px; border-radius:var(--radius-sm); font-size:15px; font-weight:700; cursor:pointer; border:none; }
+
+/* NOTES PANEL */
+.notes-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:150; }
+.notes-overlay.active { display:block; }
+.notes-panel {
+  position:fixed; top:0; right:-320px; width:300px; height:100%; background:var(--card);
+  border-left:1px solid var(--border); padding:20px; z-index:151; transition:right 0.3s;
+  overflow-y:auto;
+}
+.notes-panel.active { right:0; }
+.notes-panel h2 { font-size:18px; font-weight:700; margin-bottom:8px; }
+.notes-panel textarea {
+  width:100%; height:calc(100% - 100px); border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  padding:12px; font-size:14px; background:var(--input-bg); color:var(--text); resize:none; outline:none;
+  font-family:inherit;
+}
+.notes-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; color:var(--text-secondary); cursor:pointer; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border);
+  padding:12px 16px; padding-bottom:max(12px, env(safe-area-inset-bottom)); display:flex; gap:10px; z-index:99;
+}
+.nav-btn {
+  flex:1; padding:14px; border-radius:var(--radius); font-size:15px; font-weight:700;
+  cursor:pointer; border:none; transition:all 0.2s;
+}
+.nav-btn:active { transform:scale(0.97); }
+.nav-btn.primary { background:var(--primary); color:white; }
+.nav-btn.secondary { background:var(--input-bg); color:var(--text); }
+
+/* TONE COLORS */
+.tone-chill { color: #9333ea; }
+.tone-concerned { color: #ef4444; }
+.tone-highlight { background: #fef08a; padding: 1px 4px; border-radius: 3px; }
+.tone-green { background: #bbf7d0; padding: 1px 4px; border-radius: 3px; }
+
+@media (min-width:768px) { .main-content{padding:24px;} .script-text{font-size:18px;} }
+</style>
+</head>
+<body class="on-welcome">
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-row">
+    <div>
+      <h1>MP Live Transfer</h1>
+      <div class="script-type-badge">Mortgage Protection</div>
+    </div>
+    <div class="top-bar-actions">
+      <button class="tips-toggle active tips-on" id="tipsToggle" onclick="toggleTips()">Tips</button>
+      <button class="icon-btn" onclick="toggleNotes()" title="Notes">&#128221;</button>
+      <button class="icon-btn" onclick="toggleTheme()" title="Dark Mode">&#127769;</button>
+      <button class="icon-btn" onclick="resetCall()" title="New Call">&#8635;</button>
+    </div>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <!-- WELCOME -->
+  <div class="script-section active" id="welcome">
+    <div class="welcome-screen">
+      <div class="welcome-logo">&#9889;</div>
+      <h1>FMO Scripts</h1>
+      <p>Mortgage Protection Live Transfer &amp; Appointment Booking Script</p>
+      <input type="text" class="prospect-input" id="prospectNameInput" placeholder="Prospect's First Name" autocomplete="off">
+      <button class="start-btn" onclick="startCall()">Start Call</button>
+    </div>
+  </div>
+
+  <!-- SCRIPT ONE-PAGER -->
+  <div class="script-section" id="mp-script">
+    <span class="stage-badge">Mortgage Protection &mdash; Live Transfer</span>
+    <div class="section-title">Live Transfer Script</div>
+    <div class="section-subtitle">Book the appointment &rarr; Verify credentials &rarr; Transfer to senior associate</div>
+
+    <!-- Voicemail Button -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <button class="coverage-toggle active" style="max-width:260px;width:100%;padding:12px 20px;font-size:15px;" onclick="openVoicemail()">&#9993; Voicemail Script</button>
+    </div>
+
+    <!-- ======== AUTHORITY OPENER ======== -->
+    <div class="inoculation-card">
+      <div class="card-header">Authority Opener</div>
+      <div class="script-text">
+        <span class="tone-chill">Yeah, <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span>?</span> Hey <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span>, this is Jonathan. <span class="tone-concerned">Just had to give you a quick call here.. I work with the brokerage that handles the mortgage protection for <span class="fill-field filled" data-field="lender" onclick="editField(this)">Lender</span>.</span>
+        <br><br>
+        <span class="tone-concerned">And your file that's associated with your property on <span class="fill-field filled" data-field="address" onclick="editField(this)">Address</span> just came across my desk, and it's still showing me as incomplete...</span> <strong>The only reason for that... is sometime around when you had closed with <span class="fill-field filled" data-field="lender" onclick="editField(this)">Lender</span>&gt;...</strong> <span class="tone-concerned">we sent you several documents in the mail about the mortgage protection. Right, where it pays off the home if you (get sick) or pass away.</span>
+        <br><br>
+        <span class="tone-concerned">And it looks like you actually did the right thing _____ &hellip; I mean, you.. either filled out the card, and mailed it back into us or scanned the QR code...</span> <span class="tone-concerned"><strong>But for whatever reason, on our end, we still haven't gotten that completed...</strong></span> I'm the manager in the area, so I just wanted to make sure we had gotten you guys taken care of.
+      </div>
+      <div class="coaching-tip"><strong>Tone guide:</strong> Purple text = chill &amp; blase. Red text = confused and annoyed/concerned. Match the energy to the color.</div>
+    </div>
+
+    <!-- ======== QUALIFYING QUESTIONS ======== -->
+    <div class="card">
+      <div class="card-header">Qualifying Questions</div>
+      <div class="script-text">
+        <strong>Now, is it just you in the home or is there a spouse there with you? And is this the first time you would be talking to an underwriter regarding mortgage protection?</strong>
+      </div>
+      <div class="direction mt-8"><em>[Wait for response]</em></div>
+    </div>
+
+    <!-- ======== OBJECTION HANDLING ======== -->
+
+    <!-- Not interested -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;Not interested / I don&rsquo;t need it&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Perfect <span class="fill-field" data-field="name" onclick="editField(this)">Prospect</span>, totally understand&hellip; not everybody needs the protection, it's different for everybody's situation&hellip; <span class="tone-highlight">let me ask you this,</span> <span class="tone-green">who all lives in the home there with you?</span></div>
+        <div class="coaching-tip">Agree &rarr; normalize &rarr; pivot to discovery. Gets them talking past the objection.</div>
+      </div>
+    </div>
+
+    <!-- Don't remember / Never talked to anybody -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;Don&rsquo;t remember / Never talked to anybody / Won&rsquo;t qualify&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Ok perfect, that&rsquo;s exactly the reason for my call&hellip; I'll be assigning one of our senior medical underwriters here in the state to show you guys your options and shop around with all the carriers in the state who offer mortgage protection to help figure out what makes sense for you guys.
+        <br><br>
+        Go ahead and grab a pen and paper. I'll have you write a few things down before I connect you&hellip;</div>
+        <div class="coaching-tip">Transition straight into the Credentials &amp; Transfer section below.</div>
+      </div>
+    </div>
+
+    <!-- Already got it taken care of -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;Already got it taken care of&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Perfect, that&rsquo;s exactly the reason for my call, whoever helped you with the coverage forgot to update your policy information in the system so that the calls would stop. And no worries, this has been happening a lot recently; it&rsquo;s usually just a junior underwriter who might be new, so I&rsquo;ll make sure to help update that for you now&hellip;&hellip;
+        <br><br>
+        <strong>Do you remember the name of the company they put you with?</strong>
+        <br><br>
+        <em>**????*** &lt;&lt;carrier&gt;&gt; ???</em> Was that the first place that you looked for the coverage? Do you have any sort of major medical conditions or diabetes at a young age?
+        <br><br>
+        Ok and it is state law that they would have sent the policy packet in the mail &mdash; did you get that ok?
+        <br><br>
+        <strong>Got it and how much were they making you pay for that?</strong>
+        <br><br>
+        <span class="fill-field" data-field="name" onclick="editField(this)">Prospect</span>, something isn&rsquo;t right here&hellip; it looks like they put you in the wrong risk class&hellip; let me loop in senior medical underwriter to get this taken care of&hellip; Go ahead and grab a pen and paper. I'll have you write a few things down before I connect you&hellip;</div>
+        <div class="coaching-tip">Run through their existing coverage to find gaps, then transition to the transfer.</div>
+      </div>
+    </div>
+
+    <!-- ======== CREDENTIALS & TRANSFER ======== -->
+    <div class="inoculation-card">
+      <div class="card-header">Credentials &amp; Transfer</div>
+      <div class="script-text">
+        <em>[Have them write down:]</em>
+        <br><br>
+        <strong>Jonathan Barajas</strong>
+        <br><br>
+        <strong>NPN 21022872</strong>
+        <br><br>
+        <strong>Bear with me one moment while I connect you to Jonathan&hellip;..</strong>
+      </div>
+      <div class="coaching-tip">Give them the name and NPN before transferring. This builds trust and gives the senior associate a warm handoff.</div>
+    </div>
+
+    <!-- ======== HOUSEHOLD DISCOVERY ======== -->
+    <div class="card">
+      <div class="card-header">Household</div>
+      <div class="script-text"><strong>Who lives in the home there with you?</strong></div>
+    </div>
+    <div class="coverage-toggle-group">
+      <button class="coverage-toggle" id="hh-btn-somebody" onclick="showHousehold('somebody')">Somebody</button>
+      <button class="coverage-toggle" id="hh-btn-nobody" onclick="showHousehold('nobody')">Nobody</button>
+    </div>
+
+    <!-- Somebody -->
+    <div id="hh-somebody" style="display:none;">
+      <div class="card">
+        <div class="card-header">Who Lives With Them?</div>
+        <div class="script-text"><strong>Who would be affected if something happens to you?</strong></div>
+        <input type="text" id="beneficiaryInput" placeholder="Enter name (spouse, partner, kids)..." autocomplete="off"
+          style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--input-bg);color:var(--text);outline:none;margin-top:10px;"
+          oninput="setBeneficiary(this.value)">
+      </div>
+      <div class="card">
+        <div class="card-header">Somebody Lives With Them</div>
+        <div class="script-text">
+          So if anything were to happen to you, I&rsquo;m assuming you would want them to be able to stay there in the home right? They wouldn&rsquo;t want to sell or downsize would they? And as it stands right now, would they be able to afford the home if they were to lose your income?
+        </div>
+        <div class="direction mt-8"><em>[Wait for response]</em></div>
+        <div class="coverage-toggle-group" style="margin-top:12px;">
+          <button class="coverage-toggle" id="scenario-stay" onclick="toggleScenario(this,'stay')">Stay in the Home</button>
+          <button class="coverage-toggle" id="scenario-sell" onclick="toggleScenario(this,'sell')">Sell or Downsize</button>
+          <button class="coverage-toggle" id="scenario-afford" onclick="toggleScenario(this,'afford')">Make it Affordable</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nobody -->
+    <div id="hh-nobody" style="display:none;">
+      <div class="card">
+        <div class="card-header">Nobody &mdash; Inheritance Scenario</div>
+        <div class="script-text">If anything were to happen to you, who would the home be going to?</div>
+        <div class="script-text" style="margin-top:10px;"><strong>And what&rsquo;s their name?</strong></div>
+        <input type="text" id="beneficiaryInputNobody" placeholder="Enter their name..." autocomplete="off"
+          style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--input-bg);color:var(--text);outline:none;margin-top:10px;"
+          oninput="setBeneficiary(this.value)">
+        <div class="script-text" style="margin-top:14px;">
+          Do they live nearby? I&rsquo;m assuming they&rsquo;re grown with their own family and mortgage?
+          <br><br>
+          Do you know if they would want to move in, or would they just want to get the home cleaned up, cleaned out, fixed up, listed and sold for a fair market value and just receive the equity as a blessing?
+        </div>
+        <div class="direction mt-8"><em>[Wait for response]</em></div>
+        <div class="coverage-toggle-group" style="margin-top:12px;">
+          <button class="coverage-toggle" id="scenario-movein" onclick="toggleScenario(this,'movein')">Move In</button>
+          <button class="coverage-toggle" id="scenario-equity" onclick="toggleScenario(this,'equity')">Sell for Equity</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======== MORTGAGE DETAILS ======== -->
+    <div class="card">
+      <div class="card-header">Mortgage Details</div>
+      <div class="script-text"><strong>How much is the monthly mortgage bill &mdash; taxes, fees, everything included?</strong></div>
+      <input type="text" id="mortgagePayment" placeholder="e.g. $1,750" autocomplete="off"
+        style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--input-bg);color:var(--text);outline:none;margin-top:10px;"
+        oninput="setField('mortgagePayment',this.value)">
+      <div class="script-text" style="margin-top:14px;">Was that a 30-year term? <em>(back when)</em></div>
+      <div class="script-text" style="margin-top:14px;"><strong>And what&rsquo;s the balance left on the loan?</strong></div>
+      <input type="text" id="loanBalance" placeholder="e.g. $189,000" autocomplete="off"
+        style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:16px;background:var(--input-bg);color:var(--text);outline:none;margin-top:10px;"
+        oninput="setField('loanBalance',this.value)">
+      <div class="script-text" style="margin-top:14px;"><strong>And is this your forever home?</strong></div>
+    </div>
+
+    <!-- Forever Home -->
+    <div class="inoculation-card">
+      <div class="card-header">Forever Home &mdash; Coverage Portability</div>
+      <div class="script-text">
+        Ok got it, just so you know &mdash; the coverage is tied to yourself and your physical health, <strong>not the loan, lender, or property</strong>, so even if you do move or refinance, the coverage is going to stick with you unless you want to surrender it at that point. <strong>Are you with me?</strong>
+      </div>
+    </div>
+
+    <!-- ======== EMPLOYMENT ======== -->
+    <div class="card">
+      <div class="card-header">Employment &amp; Income</div>
+      <div class="script-text">
+        Ok got it, and <strong>what do you do for work?</strong>
+        <br><br>How long have you been doing that? What were you doing before that?
+        <br><br><strong>What&rsquo;s your monthly income after taxes?</strong> <em>(What actually gets deposited)</em>
+        <br><br>What about your spouse&rsquo;s income? Do they help pay with the bills?
+      </div>
+    </div>
+
+    <!-- ======== EXISTING COVERAGE ======== -->
+    <div class="card">
+      <div class="card-header">Existing Coverage</div>
+      <div class="script-text"><strong>Do you have any life insurance through your work?</strong></div>
+      <div class="coaching-tip">Tell all clients to take whatever they can through work &mdash; it&rsquo;s pennies on the dollar for the group plan. But it&rsquo;s like a company car: as soon as you leave, you&rsquo;re stuck with no coverage.</div>
+      <div class="script-text" style="margin-top:12px;">
+        <strong>Do you have any private life insurance?</strong><br>
+        <em>Coverage with who? When did you get it? How much coverage? Permanent or term? How much are they paying?</em>
+      </div>
+      <div class="script-text" style="margin-top:12px;">
+        <strong>What else do you have that could act like life insurance in case of an emergency?</strong> So 401k, IRAs, stocks, bonds, significant savings?
+      </div>
+    </div>
+
+    <!-- ======== HEALTH QUESTIONS ======== -->
+    <div class="card" style="border-left: 4px solid var(--primary);">
+      <div class="card-header">Health Questions</div>
+      <div class="script-text">Ok that gives me a better understanding of the financial situation, now into a few health questions to see what you can qualify for.</div>
+    </div>
+    <div class="card">
+      <ul class="checklist">
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Are you a smoker, or a non-smoker?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">What&rsquo;s an approximate height/weight for ya?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">How old are you?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">And when was your birthday?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Have you had any surgeries in the last 10 years?</div><div class="checklist-sub">If so, when? Any meds prescribed?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Any overnight hospital stays in the past 5 years?</div><div class="checklist-sub">Any meds prescribed in relation?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Do you take any medications?</div><div class="checklist-sub">When first prescribed? Names, conditions, doses?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Anything else that might show up in a prescription history?</div><div class="checklist-sub">When were they prescribed?</div></div></li>
+        <li class="checklist-item" onclick="toggleCheck(this)"><div class="check-circle"></div><div><div class="checklist-text">Any run-ins with the law, DUIs, reckless driving?</div></div></li>
+      </ul>
+    </div>
+
+    <!-- ======== RECAP ======== -->
+    <div class="inoculation-card">
+      <div class="card-header">Recap</div>
+      <div class="script-text">
+        Alright <span class="fill-field" data-field="name" onclick="editField(this)">Prospect</span>, just to make sure I have everything right &mdash;
+        <br><br>
+        It&rsquo;s you and <span class="fill-field" data-field="beneficiary" onclick="editField(this)">Beneficiary</span> there on <span class="fill-field filled" data-field="address" onclick="editField(this)">Address</span>,
+        <br><br>
+        Your mortgage is around <span class="fill-field" data-field="mortgagePayment" onclick="editField(this)">$_____</span> a month, taxes and insurance included, with about <span class="fill-field" data-field="loanBalance" onclick="editField(this)">$_____</span> left on the balance?
+        <br><br>
+        And you mentioned if something happened, <span class="fill-field" data-field="beneficiary" onclick="editField(this)">Beneficiary</span> would most likely <span id="recap-scenario" style="font-weight:600;color:var(--primary);">___</span> &mdash; right?
+        <br><br>
+        <strong>Does that all sound about right so far?</strong>
+      </div>
+      <div class="direction mt-8"><em>[Wait for confirmation before proceeding]</em></div>
+    </div>
+
+    <!-- ======== PRESENTATION ======== -->
+    <div class="card" style="border-left: 4px solid var(--success);">
+      <div class="card-header">Presentation &mdash; Two Sides of the Coin</div>
+      <div class="script-text">Now, when we think about mortgage protection, I always tell clients to think of it like a coin &mdash; <strong>two sides.</strong></div>
+    </div>
+    <div class="card">
+      <div class="card-header">Side 1 &mdash; Death Benefit</div>
+      <div class="script-text">
+        God forbid something happens, the insurance company writes a lump sum, <strong>tax-free check</strong> directly to <span class="fill-field" data-field="beneficiary" onclick="editField(this)">Beneficiary</span> so the home could be paid off completely &mdash; or so they could have enough time to get the home sold.
+        <br><br><strong>I&rsquo;m assuming that&rsquo;s pretty important to you, right?</strong>
+      </div>
+    </div>
+    <div class="inoculation-card">
+      <div class="card-header">Side 2 &mdash; Living Benefits</div>
+      <div class="script-text">
+        Now, the other side of the coin is what we call <strong>living benefits</strong> &mdash; these plans are fully customizable.
+        <br><br>
+        If you were to get sick &mdash; cancer, heart attack, stroke &mdash; the insurance company would actually <strong>advance you the death benefit while you&rsquo;re still alive.</strong>
+        <br><br>
+        You could use that money to keep the mortgage covered while you&rsquo;re out of work.
+        <br><br><strong>Are those living benefits something you could also see the value in?</strong>
+      </div>
+    </div>
+
+    <!-- ======== HOLD & QUOTE ======== -->
+    <div class="card" style="border-left: 4px solid var(--success);">
+      <div class="card-header">Hold &amp; Quote</div>
+      <div class="script-text">
+        Perfect. Give me a couple mins &mdash; I&rsquo;m going to plug in this information in our software that checks all 65 carriers here in the state and see what options we have available for you that match exactly what you&rsquo;re looking for.
+        <br><br>
+        I&rsquo;m gonna place you on a brief hold&hellip; <strong>go ahead and grab a pen and paper, I&rsquo;ll have you write a few things down when I get back. Sound good?</strong>
+      </div>
+    </div>
+
+    <!-- End -->
+    <div class="card" style="text-align:center;margin-top:20px;">
+      <div style="font-size:40px;margin-bottom:12px;">&#127881;</div>
+      <div class="section-title" style="font-size:22px;">End of Script</div>
+      <div style="color:var(--text-secondary);font-size:15px;margin-top:8px;">Come back with quote options and close.</div>
+      <button class="start-btn" style="max-width:200px;margin:16px auto 0;" onclick="resetCall()">Start New Call</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- VOICEMAIL MODAL -->
+<div class="input-modal" id="voicemailModal" onclick="if(event.target===this)this.classList.remove('active');">
+  <div class="input-card" style="max-width:440px;">
+    <label style="font-size:16px;font-weight:700;margin-bottom:12px;display:block;">Voicemail Script</label>
+    <div class="script-text" style="font-size:15px;line-height:1.7;">
+      Good <span id="vmGreeting" style="color:var(--primary);font-weight:700;">Morning</span>, this message is for <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span> &mdash; this is ______ getting back to you in regards to your mortgage with <span class="fill-field filled" data-field="lender" onclick="editField(this)">Lender</span>.
+      <br><br>
+      We have some pending paperwork to get back to you on regarding an internal audit on the mortgage for <span class="fill-field filled" data-field="address" onclick="editField(this)">Address</span>.
+      <br><br>
+      Please give me a call back at <strong>(443) 878-2749</strong>, regarding pending paperwork.
+    </div>
+    <div class="input-actions" style="margin-top:16px;">
+      <button class="primary" style="background:var(--primary);color:white;width:100%;padding:14px;border-radius:var(--radius-sm);font-size:15px;font-weight:700;border:none;cursor:pointer;" onclick="document.getElementById('voicemailModal').classList.remove('active');">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- INPUT MODAL -->
+<div class="input-modal" id="inputModal">
+  <div class="input-card">
+    <label id="inputLabel">Enter value</label>
+    <input type="text" id="inputField" autocomplete="off">
+    <div class="input-actions">
+      <button class="secondary" style="background:var(--input-bg);color:var(--text);" onclick="cancelInput()">Cancel</button>
+      <button class="primary" style="background:var(--primary);color:white;" onclick="confirmInput()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTES PANEL -->
+<div class="notes-overlay" id="notesOverlay" onclick="toggleNotes()"></div>
+<div class="notes-panel" id="notesPanel">
+  <button class="notes-close" onclick="toggleNotes()">&times;</button>
+  <h2>Call Notes</h2>
+  <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Notes saved for this session.</p>
+  <textarea id="notesArea" placeholder="Jot down key details here...&#10;&#10;- Smoker/Non-smoker:&#10;- Health issues:&#10;- Mortgage amount:&#10;- Monthly income:&#10;- Coverage amount:"></textarea>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let fieldData = {};
+let activeFieldEl = null;
+let tipsVisible = true;
+let selectedScenarios = [];
+
+const FIELD_LABELS = {
+  name: "Prospect's Name",
+  lender: "Mortgage Lender",
+  address: "Property Address",
+  beneficiary: "Beneficiary Name",
+  mortgagePayment: "Monthly Mortgage Payment",
+  loanBalance: "Loan Balance",
+};
+
+const SCENARIO_TEXT = {
+  stay: 'want to stay in the home',
+  sell: 'want to sell or downsize',
+  afford: 'want to make it affordable',
+  movein: 'want to move in',
+  equity: 'sell for equity and keep it as a blessing'
+};
+
+// ============================================================
+// CALL FLOW
+// ============================================================
+function startCall() {
+  const name = document.getElementById('prospectNameInput').value.trim() || 'Prospect';
+  fieldData['name'] = name;
+  updateAllFields();
+  document.body.classList.remove('on-welcome');
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('mp-script').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetCall() {
+  if (!confirm('Start a new call?')) return;
+  fieldData = {};
+  selectedScenarios = [];
+  document.querySelectorAll('.script-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('welcome').classList.add('active');
+  document.body.classList.add('on-welcome');
+  document.getElementById('prospectNameInput').value = '';
+  document.querySelectorAll('.checklist-item').forEach(i => i.classList.remove('checked'));
+  document.querySelectorAll('.fill-field').forEach(f => {
+    f.textContent = f.dataset.field.charAt(0).toUpperCase() + f.dataset.field.slice(1);
+    f.classList.remove('filled');
+  });
+  document.getElementById('beneficiaryInput').value = '';
+  document.getElementById('beneficiaryInputNobody').value = '';
+  document.getElementById('mortgagePayment').value = '';
+  document.getElementById('loanBalance').value = '';
+  document.getElementById('hh-somebody').style.display = 'none';
+  document.getElementById('hh-nobody').style.display = 'none';
+  document.getElementById('hh-btn-somebody').classList.remove('active');
+  document.getElementById('hh-btn-nobody').classList.remove('active');
+  document.getElementById('recap-scenario').textContent = '___';
+  document.querySelectorAll('[id^="scenario-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('notesArea').value = '';
+}
+
+// ============================================================
+// FILL FIELDS
+// ============================================================
+function editField(el) {
+  event.stopPropagation();
+  activeFieldEl = el;
+  const field = el.dataset.field;
+  const label = FIELD_LABELS[field] || field;
+  document.getElementById('inputLabel').textContent = label;
+  const input = document.getElementById('inputField');
+  input.value = fieldData[field] || '';
+  input.setAttribute('placeholder', label);
+  document.getElementById('inputModal').classList.add('active');
+  setTimeout(() => input.focus(), 100);
+}
+
+function confirmInput() {
+  const val = document.getElementById('inputField').value.trim();
+  if (val && activeFieldEl) {
+    const field = activeFieldEl.dataset.field;
+    fieldData[field] = val;
+    updateAllFields();
+  }
+  document.getElementById('inputModal').classList.remove('active');
+  activeFieldEl = null;
+}
+
+function cancelInput() {
+  document.getElementById('inputModal').classList.remove('active');
+  activeFieldEl = null;
+}
+
+function updateAllFields() {
+  document.querySelectorAll('.fill-field').forEach(f => {
+    const field = f.dataset.field;
+    if (fieldData[field]) {
+      f.textContent = fieldData[field];
+      f.classList.add('filled');
+    }
+  });
+}
+
+function setField(field, val) {
+  const v = val.trim();
+  if (v) fieldData[field] = v;
+  updateAllFields();
+}
+
+function setBeneficiary(val) {
+  const name = val.trim();
+  if (name) fieldData['beneficiary'] = name;
+  updateAllFields();
+}
+
+// ============================================================
+// HOUSEHOLD & SCENARIOS
+// ============================================================
+function showHousehold(type) {
+  document.getElementById('hh-somebody').style.display = type === 'somebody' ? 'block' : 'none';
+  document.getElementById('hh-nobody').style.display = type === 'nobody' ? 'block' : 'none';
+  document.getElementById('hh-btn-somebody').classList.toggle('active', type === 'somebody');
+  document.getElementById('hh-btn-nobody').classList.toggle('active', type === 'nobody');
+}
+
+function toggleScenario(btn, key) {
+  btn.classList.toggle('active');
+  const idx = selectedScenarios.indexOf(key);
+  if (idx > -1) selectedScenarios.splice(idx, 1);
+  else selectedScenarios.push(key);
+  const el = document.getElementById('recap-scenario');
+  el.textContent = selectedScenarios.length === 0 ? '___' : selectedScenarios.map(k => SCENARIO_TEXT[k]).join(', ');
+}
+
+// ============================================================
+// VOICEMAIL
+// ============================================================
+function openVoicemail() {
+  const h = new Date().getHours();
+  document.getElementById('vmGreeting').textContent = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+  document.getElementById('voicemailModal').classList.add('active');
+}
+
+// ============================================================
+// ACCORDION, CHECKLIST, TIPS, NOTES, THEME
+// ============================================================
+function toggleAccordion(el) { el.classList.toggle('expanded'); }
+function toggleCheck(el) { el.classList.toggle('checked'); }
+
+function toggleTips() {
+  tipsVisible = !tipsVisible;
+  document.body.classList.toggle('tips-hidden', !tipsVisible);
+  document.getElementById('tipsToggle').classList.toggle('tips-on', tipsVisible);
+}
+
+function toggleNotes() {
+  document.getElementById('notesPanel').classList.toggle('active');
+  document.getElementById('notesOverlay').classList.toggle('active');
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const c = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', c === 'dark' ? 'light' : 'dark');
+  localStorage.setItem('fmo-theme', c === 'dark' ? 'light' : 'dark');
+}
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && document.getElementById('inputModal').classList.contains('active')) confirmInput();
+  if (e.key === 'Escape') {
+    cancelInput();
+    document.getElementById('voicemailModal').classList.remove('active');
+    if (document.getElementById('notesPanel').classList.contains('active')) toggleNotes();
+  }
+});
+document.getElementById('prospectNameInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') startCall(); });
+
+// Load theme
+(function(){ const s = localStorage.getItem('fmo-theme'); if (s === 'dark') document.documentElement.setAttribute('data-theme','dark'); })();
+</script>
+</body>
+</html>
