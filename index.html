@@ -135,7 +135,7 @@ body.tips-hidden .coaching-tip { display:none !important; }
 .objection-accordion-body {
   max-height:0; overflow:hidden; transition:max-height 0.35s ease; padding:0 16px;
 }
-.objection-accordion.expanded .objection-accordion-body { max-height:800px; padding:0 16px 16px; }
+.objection-accordion.expanded .objection-accordion-body { max-height:5000px; padding:0 16px 16px; }
 .rebuttal { font-size:15px; line-height:1.6; margin-bottom:10px; }
 
 /* FILL FIELDS */
@@ -307,6 +307,166 @@ body.tips-hidden .coaching-tip { display:none !important; }
         <br><br>
         <span class="fill-field" data-field="name" onclick="editField(this)">Prospect</span>, something isn&rsquo;t right here&hellip; it looks like they put you in the wrong risk class&hellip; let me loop in senior medical underwriter to get this taken care of&hellip; Go ahead and grab a pen and paper. I'll have you write a few things down before I connect you&hellip;</div>
         <div class="coaching-tip">Run through their existing coverage to find gaps, then transition to the transfer.</div>
+      </div>
+    </div>
+
+    <!-- Not interested / I don't want it -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;Not interested / I don&rsquo;t want it&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Oh, okay. I assume you already took a look at some options and nothing fit in the budget? Or what was the situation there?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Get them talking. Find out if it&rsquo;s a real objection or a reflex. Once they explain, pivot to the relevant rebuttal.</div>
+      </div>
+    </div>
+
+    <!-- I can't afford it -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I can&rsquo;t afford it&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. So if this was like $50 bucks a month, it would just be something that would be taking food off the table?</div>
+        <div class="rebuttal"><strong>If they say yes:</strong><br>Gotcha. And I mean, I assume this is something that&rsquo;s important to you. Would it be worth it for one of my underwriters to get back to you &mdash; maybe three, four months &mdash; to see if you&rsquo;re in a different financial situation?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Soft close into a callback. Keep the lead warm.</div>
+      </div>
+    </div>
+
+    <!-- I didn't / don't remember filling anything out -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I didn&rsquo;t / don&rsquo;t remember filling anything out&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. Well, we did receive the request, so chances are it may have just been someone else in the home &mdash; whether it&rsquo;s a spouse or someone else living there &mdash; who had filled it out. I&rsquo;ve been assigned as the state-licensed medical underwriter to show you guys your options and shop around with all the carriers in the state who offer the mortgage protection to help figure out what makes sense for you guys. It&rsquo;s just the coverage that would pay off or pay down the home if you were to get sick or pass away. Do you have a pen and paper handy to get this knocked out? It should only take about 10&ndash;15 minutes.</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Normalize the request, reframe your role as an underwriter, and transition straight into the presentation.</div>
+      </div>
+    </div>
+
+    <!-- I'm not with Rocket Mortgage anymore / my loan got sold -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I&rsquo;m not with Rocket Mortgage anymore / my loan got sold&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. Yeah, I see that on your file. We do work with all the lenders. I&rsquo;ve just been assigned as the state-licensed medical underwriter to show you guys your options and shop around with all the carriers in the state who offer the mortgage protection to help figure out what makes sense for you guys. It&rsquo;s essentially just the coverage that would pay off the home or pay down on it if you were to get sick or pass away. Do you have a pen and paper handy to get this knocked out? It should only take about 10&ndash;15 minutes.</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Acknowledge the lender change, make it irrelevant, and move forward.</div>
+      </div>
+    </div>
+
+    <!-- I won't / didn't qualify -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I won&rsquo;t / didn&rsquo;t qualify&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. There&rsquo;s a good chance that whoever you spoke to wasn&rsquo;t actually a broker, so they didn&rsquo;t have more options to go to to get you approved. I&rsquo;m a state-licensed broker, so I work with the top 39 carriers that offer this. Never come across anyone I haven&rsquo;t been able to find some sort of coverage for. So we&rsquo;d definitely be able to get you approved for an option this time. Do you have five, ten minutes to get this knocked out right now, or would later today work better?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Undermine the previous agent&rsquo;s credibility. Position yourself as having more options.</div>
+      </div>
+    </div>
+
+    <!-- I got it taken care of — don't remember which company -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;Got it taken care of &mdash; don&rsquo;t remember which company&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Oh, okay. I&rsquo;m not sure why they didn&rsquo;t update that on your file. Do you remember which one of our carriers we&rsquo;ve gotten you set up through? No? Okay. Any chance it was like America, Mutual of Omaha, World Neighbors, Foresters, any of those?</div>
+        <div class="rebuttal">Well, do you know if they sent you a policy packet? You didn&rsquo;t get a policy packet? Okay. Do you have like a bank statement nearby you&rsquo;re able to pull up, just to see who is making that draft, to see who that coverage is with?</div>
+        <div class="rebuttal"><strong>If there&rsquo;s pushback:</strong><br>Only reason why I&rsquo;m asking, <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span> &mdash; I&rsquo;m a state-licensed broker, so I work with the top 39 carriers in the state that offer the mortgage protection. Realistically, there&rsquo;s a high chance you&rsquo;re not actually on the best policy available for your health and age, which is probably why this did get escalated to me. If you have five, ten minutes right now, take a look at some better options &mdash; either one with more coverage for the same cost, or one a good bit cheaper than what you&rsquo;re paying now.</div>
+        <div class="coaching-tip"><strong>Goal:</strong> If they can&rsquo;t name the carrier or have no policy packet, good chance it lapsed or doesn&rsquo;t exist. Verify, then pivot to replacement or new sale.</div>
+      </div>
+    </div>
+
+    <!-- I have life insurance (set up recently) -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I have life insurance&rdquo; (recently)</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. Was that life insurance set up within the past five years or sometime before then?</div>
+        <div class="rebuttal"><strong>If recently:</strong><br>The only reason why I&rsquo;m asking, <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span> &mdash; I&rsquo;m a state-licensed broker. So I work with the top 39 carriers in the state that offer life insurance. So there&rsquo;s a really good chance we&rsquo;d definitely be able to find you an option with more coverage for the same cost, or one that&rsquo;s a good bit cheaper than what you&rsquo;re paying now for the same amount of coverage &mdash; with better benefits, or one that pays out if you got sick as well. Do you have five, ten minutes to take a look at this right now, or would sometime later today be better for you?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Open the door for a policy comparison/replacement.</div>
+      </div>
+    </div>
+
+    <!-- I have life insurance, set up a long time ago -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I have life insurance, set up a long time ago&rdquo;</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Gotcha. Was that policy set up sometime within the last five years or sometime before that?</div>
+        <div class="rebuttal"><strong>If a while ago:</strong><br>Okay. And do you know if that&rsquo;s enough coverage that would pay off the entire home as well as your final expenses if you were to pass away?</div>
+        <div class="rebuttal"><strong>If they say yes:</strong><br>Do you know if that also pays out if you got sick, or just if you were to pass?</div>
+        <div class="rebuttal"><strong>If just death:</strong><br>That&rsquo;s typically the main reason someone your health and age would even be looking into mortgage protection &mdash; just to make sure that if they were to get sick, any sort of critical, terminal, chronic illness, or disability &mdash; that the home would also be paid off in that situation.</div>
+        <div class="rebuttal"><strong>If it&rsquo;s through work:</strong><br>The work insurance &mdash; it&rsquo;s also kind of like a work car. It&rsquo;s gonna stay with you as long as you&rsquo;re there, but if you retire, change jobs, or get fired, it is something that&rsquo;s temporary. So it&rsquo;s obviously important to make sure that there is something that is gonna last and won&rsquo;t expire on you when you go to retire. Do you have five, ten minutes? Let&rsquo;s take a look at your options right now, or would later today work better for you?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Expose the gaps &mdash; no living benefits, temporary work coverage, or insufficient face amount.</div>
+      </div>
+    </div>
+
+    <!-- Policy Replacement — Already have it (carrier known) -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I already have it&rdquo; &mdash; Policy Replacement</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Oh, not sure why your file is still flagged as incomplete. Do you remember which one of our carriers we&rsquo;ve gotten you set up through?</div>
+        <div class="rebuttal"><strong>Once they name the carrier (e.g., America):</strong><br>Were you set up with America just because you had like diabetes at a young age? Have you had cancer recently? Heart attack? No? Okay. I&rsquo;m just trying to figure out why they would have set you up with America.</div>
+        <div class="rebuttal">Only reason why I&rsquo;m asking &mdash; I&rsquo;m a state-licensed broker, so I work with the top 39 carriers in the state that offer the mortgage protection. America is typically the most expensive option. We really only use it here as a last resort if someone is getting declined from every option. Do you know if they just started with America, or did they start with other options, you kept getting declined, and that&rsquo;s what they pivoted to?</div>
+        <div class="rebuttal"><strong>If they started with America:</strong><br>Okay. We could definitely find you some better options, assuming you are relatively healthy. Either options with more coverage for the same cost, or one that&rsquo;s a good bit cheaper than what you&rsquo;re paying now for the same amount of coverage. Maybe something with better benefits. Do you have 10 minutes to take a look at this right now, or would later today be better?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Seed doubt about their current carrier. Position it as overpriced. Open up a replacement opportunity.</div>
+      </div>
+    </div>
+
+    <!-- I need to think about it (after presenting numbers) -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I need to think about it&rdquo; (after numbers)</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Oh, okay. Were you wanting to think about which option you wanted to go with, or whether or not you wanted the coverage at all?</div>
+        <div class="rebuttal"><strong>If they say &ldquo;which option&rdquo;</strong> &mdash; that means they want it, they just need help choosing:</div>
+        <div class="rebuttal">So typically what we do here, we just submit a request for coverage. Obviously the main goal today is to make sure that you can actually get approved for this. So what we&rsquo;ll do &mdash; we&rsquo;ll start you out with that bottom option. And what you can do is at any point down the road, you can raise that coverage to whatever you&rsquo;re comfortable with and gives you that peace of mind you&rsquo;re looking for. So that bottom option &mdash; that&rsquo;s not something that will be taking food off the table, right? Okay. So if I go quiet on you, I&rsquo;m not hiding from you &mdash; just clicking away on the computer making sure we can get you approved for this bottom option. Okay?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Isolate the objection (which option vs. coverage at all), then default them into the lowest option. They can always upgrade later.</div>
+      </div>
+    </div>
+
+    <!-- I need to talk to ____ (after presenting numbers) -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>&ldquo;I need to talk to my spouse&rdquo; (after numbers)</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal">Okay, were you wanting to talk to your wife about which option you guys wanted to go with, or whether or not you wanted the coverage at all?</div>
+        <div class="rebuttal"><em>Then handle the same way as &ldquo;I need to think about it&rdquo; above &mdash; isolate the objection, default to the bottom option.</em></div>
+        <div class="coaching-tip"><strong>Goal:</strong> Same framework as &ldquo;think about it.&rdquo; Isolate the real concern, then push into the bottom option as a starting point.</div>
+      </div>
+    </div>
+
+    <!-- Policy Replacement — Appointment Tie-Down -->
+    <div class="objection-accordion" onclick="toggleAccordion(this)">
+      <button class="objection-accordion-trigger">
+        <span>Policy Replacement &mdash; Appointment Tie-Down</span>
+        <span class="obj-arrow">&#9654;</span>
+      </button>
+      <div class="objection-accordion-body">
+        <div class="rebuttal"><strong>Use when setting an appointment for a policy replacement (client isn&rsquo;t available right now):</strong></div>
+        <div class="rebuttal"><span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span>, if you could try to find that policy packet that you got mailed with the coverage details, so we can compare apples to apples to what you currently have.</div>
+        <div class="rebuttal">And really, worst-case scenario &mdash; we spend a few minutes reviewing your current policy and figure out you already have the best one available for your health and age. At that point, you could obviously just rest assured and we won&rsquo;t touch it. Best-case scenario &mdash; we find you a coverage option with more coverage for the same cost, or one a good bit cheaper than what you&rsquo;re paying now for the same amount of coverage. Okay?</div>
+        <div class="coaching-tip"><strong>Goal:</strong> Give them homework (find the policy packet) so they&rsquo;re invested. Frame it as a no-lose situation to boost show rate.</div>
       </div>
     </div>
 
