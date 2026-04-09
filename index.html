@@ -219,6 +219,25 @@ body.tips-hidden .coaching-tip { display:none !important; }
 .tone-highlight { background: #fef08a; padding: 1px 4px; border-radius: 3px; }
 .tone-green { background: #bbf7d0; padding: 1px 4px; border-radius: 3px; }
 
+/* SCRIPT VERSION TOGGLE */
+.script-version-toggle {
+  display:none; align-items:center; gap:6px; padding:4px 10px; border-radius:20px;
+  border:1.5px solid var(--border); background:var(--input-bg); color:var(--text-secondary);
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap;
+}
+.script-version-toggle.active { display:flex; }
+.script-version-toggle .toggle-dot {
+  width:8px; height:8px; border-radius:50%; background:var(--text-secondary); transition:background 0.2s;
+}
+.script-version-toggle.v2-active { border-color:var(--success); color:var(--success); }
+.script-version-toggle.v2-active .toggle-dot { background:var(--success); }
+
+/* VERSION CONTENT VISIBILITY */
+.v2-content { display:none; }
+body.script-v2 .v1-content { display:none; }
+body.script-v2 .v2-content { display:block; }
+
 @media (min-width:768px) { .main-content{padding:24px;} .script-text{font-size:18px;} }
 </style>
 </head>
@@ -229,9 +248,13 @@ body.tips-hidden .coaching-tip { display:none !important; }
   <div class="top-bar-row">
     <div>
       <h1>MP Live Transfer</h1>
-      <div class="script-type-badge">Mortgage Protection</div>
+      <div class="script-type-badge" id="scriptTypeBadge">Mortgage Protection</div>
     </div>
     <div class="top-bar-actions">
+      <button class="script-version-toggle" id="scriptVersionToggle" onclick="toggleScriptVersion()" title="Switch Script Version">
+        <span class="toggle-dot"></span>
+        <span id="scriptVersionLabel">V1</span>
+      </button>
       <button class="tips-toggle active tips-on" id="tipsToggle" onclick="toggleTips()">Tips</button>
       <button class="icon-btn" onclick="toggleNotes()" title="Notes">&#128221;</button>
       <button class="icon-btn" onclick="toggleTheme()" title="Dark Mode">&#127769;</button>
@@ -264,8 +287,8 @@ body.tips-hidden .coaching-tip { display:none !important; }
       <button class="coverage-toggle active" style="max-width:260px;width:100%;padding:12px 20px;font-size:15px;" onclick="openVoicemail()">&#9993; Voicemail Script</button>
     </div>
 
-    <!-- ======== AUTHORITY OPENER ======== -->
-    <div class="inoculation-card">
+    <!-- ======== AUTHORITY OPENER V1 ======== -->
+    <div class="inoculation-card v1-content">
       <div class="card-header">Authority Opener</div>
       <div class="script-text">
         <span class="tone-chill"><em>Yeah,</em> <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span><em>?</em> Hey <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span>, this is Jonathan.</span> <span class="tone-chill">Just had to give you a quick call here.. I work with the brokerage that handles the mortgage protection for <span class="fill-field filled" data-field="lender" onclick="editField(this)">Lender</span>.</span>
@@ -277,8 +300,21 @@ body.tips-hidden .coaching-tip { display:none !important; }
       <div class="coaching-tip"><strong>Tone guide:</strong> Purple text = chill &amp; blase. Red text = confused and annoyed/concerned. Match the energy to the color.</div>
     </div>
 
+    <!-- ======== AUTHORITY OPENER V2 ======== -->
+    <div class="inoculation-card v2-content">
+      <div class="card-header">Authority Opener (V2)</div>
+      <div class="script-text">
+        <span class="tone-chill"><em>Yeah</em> <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span><em>?</em> Hey <span class="fill-field filled" data-field="name" onclick="editField(this)">Prospect</span>, this is Josh&hellip;</span> Just getting back to you about the request you mailed in from <span class="fill-field filled" data-field="address" onclick="editField(this)">Address</span>&hellip;
+        <br><br>
+        Back when you finalized the loan&hellip; with <span class="fill-field filled" data-field="lender" onclick="editField(this)">Lender</span>&hellip; an underwriter was assigned to help&hellip; with mortgage protection&hellip; where it pays off the loan for your family if you get sick&hellip; can&rsquo;t work&hellip; or pass away&hellip;
+        <br><br>
+        <strong>What do you remember about that?</strong>
+      </div>
+      <div class="coaching-tip"><strong>Tone guide:</strong> Casual &amp; conversational. The ellipses are natural pauses &mdash; don&rsquo;t rush through them. Let the prospect fill in the silence.</div>
+    </div>
+
     <!-- ======== QUALIFYING QUESTIONS ======== -->
-    <div class="card">
+    <div class="card" id="qualifyingQuestions">
       <div class="card-header">Qualifying Questions</div>
       <div class="script-text">
         <strong>Now, is it just you in the home or is there a spouse there with you? And is this the first time you would be talking to an underwriter regarding mortgage protection?</strong>
@@ -287,6 +323,7 @@ body.tips-hidden .coaching-tip { display:none !important; }
     </div>
 
     <!-- ======== OBJECTION HANDLING ======== -->
+    <div id="objectionsGroup">
 
     <!-- Already got it taken care of -->
     <div class="objection-accordion" onclick="toggleAccordion(this)">
@@ -414,6 +451,8 @@ body.tips-hidden .coaching-tip { display:none !important; }
       </div>
     </div>
 
+    </div><!-- /objectionsGroup -->
+
     <!-- ======== CREDENTIALS & TRANSFER ======== -->
     <div class="inoculation-card">
       <div class="card-header">Credentials &amp; Transfer</div>
@@ -488,6 +527,7 @@ let fieldData = {};
 let activeFieldEl = null;
 let tipsVisible = true;
 let selectedScenarios = [];
+let scriptVersion = parseInt(localStorage.getItem('fmo-scriptVersion')) || 1;
 
 const FIELD_LABELS = {
   name: "Prospect's Name",
@@ -517,7 +557,39 @@ function startCall() {
   document.body.classList.remove('on-welcome');
   document.getElementById('welcome').classList.remove('active');
   document.getElementById('mp-script').classList.add('active');
+  document.getElementById('scriptVersionToggle').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============================================================
+// SCRIPT VERSION TOGGLE
+// ============================================================
+function toggleScriptVersion() {
+  scriptVersion = scriptVersion >= 2 ? 1 : scriptVersion + 1;
+  localStorage.setItem('fmo-scriptVersion', scriptVersion);
+  applyScriptVersion();
+}
+
+function applyScriptVersion() {
+  const btn = document.getElementById('scriptVersionToggle');
+  const lbl = document.getElementById('scriptVersionLabel');
+  const script = document.getElementById('mp-script');
+  const qualifying = document.getElementById('qualifyingQuestions');
+  const objections = document.getElementById('objectionsGroup');
+  lbl.textContent = 'V' + scriptVersion;
+  btn.classList.remove('v2-active');
+  if (scriptVersion === 2) {
+    btn.classList.add('v2-active');
+    document.body.classList.add('script-v2');
+    // Move objections right after the V2 opener (before qualifying questions)
+    script.insertBefore(objections, qualifying);
+  } else {
+    document.body.classList.remove('script-v2');
+    // Restore original order: qualifying before objections
+    script.insertBefore(qualifying, objections);
+  }
+  document.getElementById('scriptTypeBadge').textContent =
+    scriptVersion > 1 ? 'Mortgage Protection (V' + scriptVersion + ')' : 'Mortgage Protection';
 }
 
 function resetCall() {
@@ -527,6 +599,7 @@ function resetCall() {
   document.querySelectorAll('.script-section').forEach(s => s.classList.remove('active'));
   document.getElementById('welcome').classList.add('active');
   document.body.classList.add('on-welcome');
+  document.getElementById('scriptVersionToggle').classList.remove('active');
   document.getElementById('prospectNameInput').value = '';
   document.querySelectorAll('.checklist-item').forEach(i => i.classList.remove('checked'));
   document.querySelectorAll('.fill-field').forEach(f => {
@@ -663,8 +736,12 @@ document.addEventListener('keydown', (e) => {
 });
 document.getElementById('prospectNameInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') startCall(); });
 
-// Load theme
-(function(){ const s = localStorage.getItem('fmo-theme'); if (s === 'dark') document.documentElement.setAttribute('data-theme','dark'); })();
+// Load theme & version
+(function(){
+  const s = localStorage.getItem('fmo-theme');
+  if (s === 'dark') document.documentElement.setAttribute('data-theme','dark');
+  applyScriptVersion();
+})();
 </script>
 </body>
 </html>
